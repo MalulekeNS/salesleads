@@ -1,21 +1,30 @@
-# LeadsHub - Full Stack Lead Management System
+# 🚀 Salesleads – CRM Sales Leads
 
-A complete lead management application with React frontend and multiple backend options (PHP & Java).
+![Spring Boot](https://img.shields.io/badge/SpringBoot-3.x-brightgreen)
+![WebFlux](https://img.shields.io/badge/WebFlux-Reactive-blue)
+![React](https://img.shields.io/badge/React-18+-61DAFB)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue)
+![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED)
+![JWT](https://img.shields.io/badge/Auth-JWT-orange)
 
-## 🚀 Quick Start (Docker - Recommended)
+Salesleads is a modern, reactive CRM system built with:
 
-### Prerequisites
-- Docker Desktop installed
-- Git (optional)
+- ⚛️ React (Vite + TanStack Query)
+- ☕ Spring Boot 3 (WebFlux)
+- 🐘 PostgreSQL (UUID-based schema)
+- 🔐 JWT Authentication
+- 🐳 Docker & Docker Compose
 
-### Start Everything
-```bash
-# Start PostgreSQL + PHP Backend + Frontend
-docker-compose up --build
+The system is fully containerized.
 
-# Or include Java backend too
-docker-compose --profile java up --build
-```
+---
+
+# 🏗 System Architecture
+
+React Frontend → Spring Boot WebFlux API → PostgreSQL  
+JWT-based stateless authentication
+
+---
 
 ### Access Points
 - **Frontend**: http://localhost:3000
@@ -28,7 +37,7 @@ docker-compose --profile java up --build
 
 ---
 
-## 🖥️ Local Development (Without Docker)
+## 🖥️ Local Development
 
 ### Prerequisites
 - Node.js 18+
@@ -41,10 +50,6 @@ docker-compose --profile java up --build
 # Create database
 createdb leadshub
 
-# Import schema
-psql -d leadshub -f database/schema-standalone.sql
-```
-
 ### 2. Start Frontend
 ```bash
 npm install
@@ -52,7 +57,12 @@ npm run dev
 ```
 Frontend runs on http://localhost:5173
 
-### 3. Start PHP Backend
+### 3. Start Java Backend
+```bash
+cd java-backend
+./mvnw spring-boot:run
+
+### 4. Start PHP Backend
 ```bash
 cd php-backend
 composer install
@@ -61,24 +71,17 @@ cp .env.example .env
 php -S localhost:8080 -t public
 ```
 
-### 4. Start Java Backend (Optional)
-```bash
-cd java-backend
-./mvnw spring-boot:run
-```
-
----
-
-## 📁 Project Structure
 
 ```
-leadshub/
-├── src/                    # React frontend source
+# 📂 Project Structure
+
+Salesleads/
+├── database/               # SQL schemas
 ├── php-backend/            # PHP backend
 │   ├── public/index.php    # Entry point
 │   └── src/                # PHP source files
 ├── java-backend/           # Java Spring Boot backend
-├── database/               # SQL schemas
+├── src/                    # React frontend source
 ├── docker-compose.yml      # Docker orchestration
 └── package.json            # Frontend dependencies
 ```
@@ -122,3 +125,4 @@ JWT_SECRET=your-32-character-secret-key-here
 
 ## 📄 License
 MIT License
+
