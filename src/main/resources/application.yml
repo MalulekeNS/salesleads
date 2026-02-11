@@ -1,0 +1,20 @@
+server:
+  port: 8081
+
+spring:
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/leadshub
+    username: leadshub_user
+    password: strongpassword
+
+  sql:
+    init:
+      mode: always
+
+logging:
+  level:
+    org.springframework.r2dbc: DEBUG
+
+jwt:
+  secret: verylongsecurejwtsecretkey1234567890
+  expiration: 86400000 # 24 hours in ms

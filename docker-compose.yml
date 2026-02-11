@@ -1,0 +1,113 @@
+version: '3.8'
+
+# ==============================================
+# LeadsHub Full Stack - Docker Compose
+# React Frontend + PHP Backend + Java Backend + PostgreSQL
+# ==============================================
+
+services:
+  # ==============================================
+  # PostgreSQL Database
+  # ==============================================
+  database:
+    image: postgres:15-alpine
+    container_name: leadshub-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: leadshub
+      POSTGRES_USER: leadshub_user
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-leadshub_secret_2026}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/schema-standalone.sql:/docker-entrypoint-initdb.d/01-schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U leadshub_user -d leadshub"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ==============================================
+  # PHP Backend (Apache)
+  # ==============================================
+  php-backend:
+    build:
+      context: ./php-backend
+      dockerfile: Dockerfile
+    container_name: leadshub-php
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    environment:
+      - DB_HOST=database
+      - DB_PORT=5432
+      - DB_NAME=leadshub
+      - DB_USER=leadshub_user
+      - DB_PASSWORD=${DB_PASSWORD:-leadshub_secret_2026}
+      - JWT_SECRET=${JWT_SECRET:-your-super-secret-jwt-key-minimum-32-characters}
+    depends_on:
+      database:
+        condition: service_healthy
+
+  # ==============================================
+  # Java Spring Boot Backend (Optional)
+  # ==============================================
+  java-backend:
+    build:
+      context: ./java-backend
+      dockerfile: Dockerfile
+    container_name: leadshub-java
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_R2DBC_URL=r2dbc:postgresql://database:5432/leadshub
+      - SPRING_R2DBC_USERNAME=leadshub_user
+      - SPRING_R2DBC_PASSWORD=${DB_PASSWORD:-leadshub_secret_2026}
+      - JWT_SECRET=${JWT_SECRET:-your-super-secret-jwt-key-minimum-32-characters}
+    depends_on:
+      database:
+        condition: service_healthy
+    profiles:
+      - java
+
+  # ==============================================
+  # React Frontend Development
+  # ==============================================
+  frontend:
+    image: node:20-alpine
+    container_name: leadshub-frontend
+    working_dir: /app
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:8080/api/public
+    command: sh -c "npm install && npm run dev -- --host"
+    depends_on:
+      - php-backend
+
+volumes:
+  postgres_data:
+
+# ==============================================
+# Usage:
+# 
+# 1. Start everything:
+#    docker-compose up --build
+#
+# 2. With Java backend:
+#    docker-compose --profile java up --build
+#
+# 3. Access:
+#    - Frontend: http://localhost:5173
+#    - PHP API:  http://localhost:8080/api/public
+#    - Java API: http://localhost:8081/api
+#
+# 4. Test credentials:
+#    Email: demo@leadshub.com
+#    Password: test123
+# ==============================================
