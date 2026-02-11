@@ -1,7 +1,7 @@
 
 ---
 
-# 🎯 MIT
+# 🎯 MIT License
 
 
 
